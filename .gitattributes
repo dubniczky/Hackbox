@@ -1,0 +1,2 @@
+# Force shell scipt files to checkout with LF line endings
+*.sh eol=lf
