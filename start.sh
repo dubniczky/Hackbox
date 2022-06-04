@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Start VNC server
-vncserver :0
+vncserver :0 \
     -rfbport $VNC_PORT \
     -geometry $VNC_DISPLAY \
     -depth $VNC_DEPTH \
-    > /var/log/vncserver.log 2>&1
+    > /var/log/vnc.log 2>&1
 
 # Start noVNC server
-/usr/share/novnc/utils/launch.sh
-    --listen $NOVNC_PORT
+/usr/share/novnc/utils/launch.sh \
+    --listen $NOVNC_PORT \
     --vnc localhost:$VNC_PORT \
     --cert /etc/ssl/private/novnc_combined.pem \
     --ssl-only \
