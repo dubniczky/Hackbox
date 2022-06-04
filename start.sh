@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Start VNC server
+# Log locations
 VNC_RUNTIME_LOG=/var/log/vnc.log
+NOVNC_RUNTIME_LOG=/var/log/novnc.log
+
+# Start VNC server
 echo "Starting VNC server..."
 echo "   > port: $VNC_PORT"
 echo "   > resoultion: $VNC_DISPLAY"
@@ -12,18 +15,26 @@ vncserver :0 \
     -geometry $VNC_DISPLAY \
     -depth $VNC_DEPTH \
     > $VNC_RUNTIME_LOG 2>&1
+echo "Done."
 
 # Start noVNC server
+echo "Starting noVNC server..."
+echo "   > port: $NOVNC_PORT"
+echo "   > runtime log: $NOVNC_RUNTIME_LOG"
 /usr/share/novnc/utils/launch.sh \
     --listen $NOVNC_PORT \
     --vnc localhost:$VNC_PORT \
     --cert /etc/ssl/private/novnc_combined.pem \
     --ssl-only \
-    > /var/log/novnc.log 2>&1 &
+    > $NOVNC_RUNTIME_LOG 2>&1 &
+echo "Done."
 
-echo "https://localhost:8080/vnc.html"
-echo "certificate fingerprint:"
+# Display certificate fingerprint
+echo "Certificate fingerprint:"
 openssl x509 -in /etc/ssl/certs/novnc_cert.pem -noout -fingerprint -sha256
+
+# Display URL (port might change with docker port readdressing)
+echo "https://localhost:$NOVNC_PORT/vnc.html"
 
 # Start shell
 /bin/zsh
