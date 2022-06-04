@@ -38,7 +38,7 @@ RUN apt -qy install \
 # Run scripts
 COPY /scripts /root/scripts
 WORKDIR /root/scripts/
-RUN ./generate-certificate.sh
+RUN ./certificate.sh
 RUN ./install-vscodium.sh
 
 # Clean package cache and unused packages
