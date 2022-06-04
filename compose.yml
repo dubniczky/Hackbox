@@ -10,4 +10,6 @@ services:
     ports:
       - 8080:8080
       - 5900:5900
+    tty: true
+    #command: ./.start.sh; tail -F /dev/null
     restart: unless-stopped
