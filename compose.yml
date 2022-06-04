@@ -1,0 +1,13 @@
+version: '3'
+services:
+
+  kali:
+    container_name: kali
+    hostname: kali
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+      - 5900:5900
+    restart: unless-stopped
