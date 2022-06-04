@@ -63,6 +63,10 @@ RUN rm -rf /root/scripts
 WORKDIR $HOME
 RUN rm -rf Documents Downloads Music Pictures Public Templates Videos
 
+# Delete unnecessary packages
+RUN apt -qy purge \
+    xfce4-power-manager-data
+
 # Clean package cache and unused packages
 RUN apt -qy clean && \
     apt -qy autoremove
