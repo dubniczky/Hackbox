@@ -1,12 +1,6 @@
 FROM kalilinux/kali-rolling:latest
 
-# TODO: remove unused
-ENV USER root \
-    NOVNC_PORT 8080 \
-    VNC_PORT 5900 \    
-    VNC_PASSWORD toor \
-    VNC_DISPLAY 1920x1080 \
-    VNC_DEPTH 16
+ENV USER root
 
 # Disable interactivity
 ENV DEBIAN_FRONTEND noninteractive \
@@ -34,13 +28,18 @@ RUN mkdir -p /root/.vnc/; \
 # Extra packages
 RUN apt -qy install \
     kali-tools-top10 \
-    nano
+    nano \
+    mc
 
 # Run scripts
 COPY /scripts /root/scripts
 WORKDIR /root/scripts/
 RUN chmod +x ./*
 RUN ./certificate.sh
+RUN ./vscodium.sh
+RUN ./nodejs.sh
+RUN ./python.sh
+RUN ./signal.sh
 RUN ./vscodium.sh
 
 # Clean package cache and unused packages
