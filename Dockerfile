@@ -30,7 +30,11 @@ RUN apt -qy install \
     kali-tools-top10 \
     nano \
     mc \
-    filezilla
+    filezilla \
+    sqlite3 \
+    iputils-ping \
+    traceroute \
+    skipfish
 
 # Copy scripts
 COPY /scripts /root/scripts
