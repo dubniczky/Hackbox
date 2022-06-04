@@ -14,7 +14,7 @@ RUN apt -q update && \
 # Install kali packages
 RUN apt -qy install kali-linux-core
 
-# Install kali xfce desktop
+# Install kali xfce desktop (takes a long time ~5m)
 RUN apt -qy install kali-desktop-xfce
 
 # Install vnc and components
@@ -31,16 +31,22 @@ RUN apt -qy install \
     nano \
     mc
 
-# Run scripts
+# Copy scripts
 COPY /scripts /root/scripts
 WORKDIR /root/scripts/
 RUN chmod +x ./*
-RUN ./certificate.sh
-RUN ./vscodium.sh
-RUN ./nodejs.sh
-RUN ./python.sh
-RUN ./signal.sh
-RUN ./vscodium.sh
+
+# Run scripts
+RUN source certificate.sh
+RUN source vscodium.sh
+RUN source nodejs.sh
+RUN source python.sh
+RUN source signal.sh
+RUN source vscodium.sh
+
+# Cleanup scripts
+WORKDIR /
+RUN rm -rf /root/scripts
 
 # Clean package cache and unused packages
 RUN apt -qy clean && \
