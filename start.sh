@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Log locations
-VNC_RUNTIME_LOG=/var/log/vnc.log
-NOVNC_RUNTIME_LOG=/var/log/novnc.log
-
 # Start VNC server
 echo "Starting VNC server..."
 echo "   > port: $VNC_PORT"
