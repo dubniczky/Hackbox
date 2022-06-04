@@ -22,14 +22,15 @@ RUN apt -qy install tightvncserver dbus dbus-x11 novnc net-tools
 
 # Set up VNC password
 RUN mkdir -p /root/.vnc/; \
-    echo $VNC_PASSWORD | vncpasswd -f > /root/.vnc/passwd; \
+    echo toor | vncpasswd -f > /root/.vnc/passwd; \
     chmod 600 /root/.vnc/passwd
 
 # Extra packages
 RUN apt -qy install \
     kali-tools-top10 \
     nano \
-    mc
+    mc \
+    filezilla
 
 # Copy scripts
 COPY /scripts /root/scripts
@@ -37,16 +38,20 @@ WORKDIR /root/scripts/
 RUN chmod +x ./*
 
 # Run scripts
-RUN source certificate.sh
-RUN source vscodium.sh
-RUN source nodejs.sh
-RUN source python.sh
-RUN source signal.sh
-RUN source vscodium.sh
+RUN ./certificate.sh
+RUN ./vscodium.sh || true
+RUN ./nodejs.sh || true
+RUN ./python.sh || true
+RUN ./signal.sh || true
+RUN ./vscodium.sh || true
 
 # Cleanup scripts
 WORKDIR /
 RUN rm -rf /root/scripts
+
+# Cleanup user files
+WORKDIR $HOME
+RUN rm -rf Documents Downloads Music Pictures Public Templates Videos
 
 # Clean package cache and unused packages
 RUN apt -qy clean && \
