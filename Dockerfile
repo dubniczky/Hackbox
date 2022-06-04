@@ -38,6 +38,7 @@ RUN apt -qy install \
 # Run scripts
 COPY /scripts /root/scripts
 WORKDIR /root/scripts/
+RUN chmod +x ./*
 RUN ./certificate.sh
 RUN ./vscodium.sh
 
@@ -47,6 +48,6 @@ RUN apt -qy clean && \
 
 # Entrypoint
 WORKDIR /root
-COPY start.sh .
-RUN chmod 700 start.sh
-ENTRYPOINT [ "/start.sh" ]
+COPY start.sh .start.sh
+RUN chmod 700 .start.sh
+ENTRYPOINT [ "./.start.sh" ]
