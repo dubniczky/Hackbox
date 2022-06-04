@@ -34,7 +34,8 @@ RUN apt -qy install \
     sqlite3 \
     iputils-ping \
     traceroute \
-    skipfish
+    skipfish \
+    htop
 
 # Copy scripts
 COPY /scripts /root/scripts
