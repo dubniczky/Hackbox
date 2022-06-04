@@ -2,7 +2,11 @@
 
 cname := kali
 
-.PHONY: build start
+.PHONY: all build start
+
+all:
+	$(MAKE) -s build
+	$(MAKE) -s start
 
 build:
 	docker build -t $(cname) .
