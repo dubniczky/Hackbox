@@ -39,7 +39,7 @@ RUN apt -qy install \
 COPY /scripts /root/scripts
 WORKDIR /root/scripts/
 RUN ./certificate.sh
-RUN ./install-vscodium.sh
+RUN ./vscodium.sh
 
 # Clean package cache and unused packages
 RUN apt -qy clean && \
