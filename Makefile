@@ -2,10 +2,10 @@
 
 cname := kali
 
-.PHONY: build
+.PHONY: build start
 
 build:
-	docker build -t $(kali) .
+	docker build -t $(cname) .
 
 start:
-	docker run --rm -it -p 8080:8080 kali
+	docker run --rm -it -p 8080:8080 $(cname)
