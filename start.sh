@@ -1,11 +1,17 @@
 #!/bin/bash
 
 # Start VNC server
+VNC_RUNTIME_LOG=/var/log/vnc.log
+echo "Starting VNC server..."
+echo "   > port: $VNC_PORT"
+echo "   > resoultion: $VNC_DISPLAY"
+echo "   > bit-depth: $VNC_DEPTH"
+echo "   > runtime log: $VNC_RUNTIME_LOG"
 vncserver :0 \
     -rfbport $VNC_PORT \
     -geometry $VNC_DISPLAY \
     -depth $VNC_DEPTH \
-    > /var/log/vnc.log 2>&1
+    > $VNC_RUNTIME_LOG 2>&1
 
 # Start noVNC server
 /usr/share/novnc/utils/launch.sh \

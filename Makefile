@@ -12,4 +12,4 @@ build:
 	docker build -t $(cname) .
 
 start:
-	docker run --rm -it -p 8080:8080 $(cname)
+	docker run --rm -it -p 8080:8080 --env-file .env $(cname)

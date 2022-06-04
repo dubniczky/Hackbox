@@ -1,5 +1,6 @@
 FROM kalilinux/kali-rolling:latest
 
+# TODO: remove unused
 ENV USER root \
     NOVNC_PORT 8080 \
     VNC_PORT 5900 \    
