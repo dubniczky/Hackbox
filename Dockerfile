@@ -9,7 +9,6 @@ ARG KALI_TAG="latest"
 FROM kalilinux/${KALI_DIST}:${KALI_TAG}
 
 # Build arguments
-ARG USER="root"
 ARG METAPACKAGE="kali-tools-top10"
 ARG VNC_PASSWORD="toor"
 
@@ -53,6 +52,11 @@ RUN apt -qy install \
     hashcat \
     wordlists
 
+# Create kali user
+ENV USER=kali
+RUN useradd -r -s /bin/zsh -m ${USER}; \
+    echo -e "${USER}\tALL=(ALL:ALL)\tNOPASSWD:ALL" >> /etc/sudoers
+
 # Generate noVNC HTTPS certificate
 WORKDIR /etc/ssl
 RUN openssl req -new -x509 -days 365 -nodes \
@@ -92,12 +96,11 @@ RUN apt -qy clean && \
     apt -qy autoremove
 
 # Cleanup user files
-USER ${USER}
-WORKDIR $HOME
+WORKDIR /home/${USER}
 RUN rm -rf Documents Downloads Music Pictures Public Templates Videos
 
 # Entrypoint
-WORKDIR /root
+WORKDIR $HOME
 COPY start.sh .start.sh
 RUN chmod 700 .start.sh
 ENTRYPOINT [ "./.start.sh" ]
