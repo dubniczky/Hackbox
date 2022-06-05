@@ -54,7 +54,8 @@ RUN apt install -qy \
         autopsy \
         dirb \
         hashcat \
-        wordlists
+        wordlists \
+        tor
 
 # Create kali user
 ENV USER="kali"
