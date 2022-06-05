@@ -108,7 +108,7 @@ WORKDIR /home/${USER}
 RUN rm -rf Documents Downloads Music Pictures Public Templates Videos
 
 # Entrypoint
-WORKDIR $HOME
+WORKDIR /root
 COPY start.sh .start.sh
 RUN chmod 700 .start.sh
 ENTRYPOINT [ "./.start.sh" ]
