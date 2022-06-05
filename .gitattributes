@@ -1,2 +1,6 @@
 # Force shell scipt files to checkout with LF line endings
 *.sh eol=lf
+
+# Force lfs for binary assets
+*.png filter=lfs diff=lfs merge=lfs -text
+*.pdn filter=lfs diff=lfs merge=lfs -text
