@@ -11,6 +11,10 @@ FROM kalilinux/${KALI_DIST}:${KALI_TAG}
 # Build arguments
 ARG METAPACKAGE="kali-tools-top10"
 ARG VNC_PASSWORD="toor"
+ARG CERT_LIFETIME="30"
+ARG CERT_C="US"
+ARG CERT_L="Austin"
+ARG CERT_ST="ST"
 
 # Disable interactivity
 ENV DEBIAN_FRONTEND noninteractive \
@@ -18,49 +22,53 @@ ENV DEBIAN_FRONTEND noninteractive \
     NEEDRESTART_MODE a
 
 # Update packages
-RUN apt -q update && \
-    apt -qy upgrade
+RUN apt update -q && \
+    apt upgrade -qy
 
 # Install kali packages
-RUN apt -qy install kali-linux-core
+RUN apt install -qy kali-linux-core
 
 # Install kali xfce desktop (takes a long time ~5m)
-RUN apt -qy install kali-desktop-xfce
+RUN apt install -qy kali-desktop-xfce
 
 # Install vnc and components
-RUN apt -qy install \
-    tightvncserver \
-    dbus \
-    dbus-x11 \
-    novnc \
-    net-tools
+RUN apt install -qy \
+        tightvncserver \
+        dbus \
+        dbus-x11 \
+        novnc \
+        net-tools
 
 # Install extra packages
-RUN apt -qy install \
-    ${METAPACKAGE} \
-    nano \
-    mc \
-    unzip \
-    filezilla \
-    sqlite3 \
-    iputils-ping \
-    traceroute \
-    skipfish \
-    htop \
-    autopsy \
-    dirb \
-    hashcat \
-    wordlists
+RUN apt install -qy \
+        ${METAPACKAGE} \
+        nano \
+        mc \
+        unzip \
+        filezilla \
+        sqlite3 \
+        iputils-ping \
+        traceroute \
+        skipfish \
+        htop \
+        autopsy \
+        dirb \
+        hashcat \
+        wordlists
 
 # Create kali user
-ENV USER=kali
+ENV USER="kali"
 RUN useradd -r -s /bin/zsh -m ${USER}; \
-    echo -e "${USER}\tALL=(ALL:ALL)\tNOPASSWD:ALL" >> /etc/sudoers
+    echo "${USER}\tALL=(ALL:ALL)\tNOPASSWD:ALL" >> /etc/sudoers
 
 # Generate noVNC HTTPS certificate
 WORKDIR /etc/ssl
-RUN openssl req -new -x509 -days 365 -nodes \
-        -subj "/C=US/ST=TX/L=Austin/O=OpenSource/CN=localhost" \
+RUN openssl req \
+        -new \
+        -x509 \
+        -days ${CERT_LIFETIME} \
+        -nodes \
+        -subj "/C=${CERT_C}/ST=${CERT_ST}/L=${CERT_L}/O=OpenSource/CN=localhost" \
         -out certs/novnc_cert.pem \
         -keyout private/novnc_key.pem \
         > /dev/null 2>&1
@@ -68,9 +76,9 @@ RUN cat certs/novnc_cert.pem private/novnc_key.pem > private/novnc_combined.pem
 RUN chmod 600 private/novnc_combined.pem
 
 # Set up VNC password
-RUN mkdir -p /root/.vnc/; \
-    echo ${VNC_PASSWORD} | vncpasswd -f > /root/.vnc/passwd; \
-    chmod 600 /root/.vnc/passwd
+WORKDIR /root/.vnc
+RUN echo ${VNC_PASSWORD} | vncpasswd -f > passwd; \
+    chmod 600 passwd
 
 # Copy scripts
 COPY /scripts /root/scripts
@@ -88,12 +96,12 @@ WORKDIR /
 RUN rm -rf /root/scripts
 
 # Delete unnecessary packages
-RUN apt -qy purge \
-    xfce4-power-manager-data
+RUN apt purge -qy \
+        xfce4-power-manager-data
 
 # Clean package cache and unused packages
-RUN apt -qy clean && \
-    apt -qy autoremove
+RUN apt clean -qy && \
+    apt autoremove -qy
 
 # Cleanup user files
 WORKDIR /home/${USER}
