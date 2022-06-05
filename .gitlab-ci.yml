@@ -1,0 +1,15 @@
+stages:
+  - deploy
+
+container-registry:
+  stage: deploy
+  image: docker:20.10.16
+  only:
+    - main
+  services:
+    - docker:20.10.16-dind
+  script:
+    # Push to GitLab Container Registry
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker build -t $CI_REGISTRY_IMAGE -t detrix/hackbox:latest .
+    - docker push $CI_REGISTRY_IMAGE
