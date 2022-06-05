@@ -15,6 +15,9 @@ trim_trailing_whitespace = false
 [*.sh]
 end_of_line = lf
 
+[*.yml]
+indent_size = 2
+
 [Makefile]
 indent_style = tab
 tab_width = 4
