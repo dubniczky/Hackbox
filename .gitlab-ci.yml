@@ -1,29 +1,66 @@
+variables:
+  # Using a static docker version for the standard and dind images
+  # This is only for reporducability so it can be upgraded
+  DOCKER_VERSION: 20.10.16
+  # Using a custom GitLab runner, because building and pushing
+  # to both registries takes over 30 minutes with shared runners
+  RUNNER_TAG: runner-2700x
+
+image: docker:$DOCKER_VERSION
+
 stages:
+  - build
   - deploy
 
-container-registry:
-  stage: deploy
-  variables:
-    DOCKER_VERSION: 20.10.16
-  image: docker:$DOCKER_VERSION
+
+build:
+  stage: build
   only:
-    # Main branch only, do not upload development versions
+    # Main branch only, do not build development versions
     - main
   tags:
-    # Using a custom GitLab runner, because building and pushing
-    # to both registries takes over 30 minutes with shared runners
-    - runner-2700x
+    - $RUNNER_TAG
   services:
     # Docker in docker service to build containers
     - docker:$DOCKER_VERSION-dind
   script:
-    # Build container
-    - docker build -t $CI_REGISTRY_IMAGE -t detrix/hackbox:latest .
+    - docker build -t $CI_REGISTRY_IMAGE -t $DOCKERHUB_USER/hackbox:latest .
+
+
+# Deploy to GitLab Container Registry
+gitlab:
+  stage: deploy
+  only:
+    # Main branch only, do not upload development versions
+    - main
+  tags:
+    - $RUNNER_TAG
+  services:
+    # Docker in docker service to build containers
+    - docker:$DOCKER_VERSION-dind
+  dependencies:
+    - build
+  script:
     # Push to GitLab Container Registry
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
     - docker push $CI_REGISTRY_IMAGE
     - docker logout
-    # Push to DockerHub Container Registry
+
+
+# Deploy to DockerHub Container Registry
+dockerhub:
+  stage: deploy
+  only:
+    # Main branch only, do not upload development versions
+    - main
+  tags:
+    - $RUNNER_TAG
+  services:
+    # Docker in docker service to build containers
+    - docker:$DOCKER_VERSION-dind
+  dependencies:
+    - build
+  script:
     - echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USER --password-stdin
-    - docker push detrix/hackbox:latest
+    - docker push $DOCKERHUB_USER/hackbox:latest
     - docker logout
