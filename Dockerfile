@@ -26,10 +26,10 @@ RUN apt update -q && \
     apt upgrade -qy
 
 # Install kali packages
-RUN apt install -qy kali-linux-core
+RUN apt install -qy kali-linux-core --no-install-recommends
 
 # Install kali xfce desktop (takes a long time ~5m)
-RUN apt install -qy kali-desktop-xfce
+RUN apt install -qy kali-desktop-xfce --no-install-recommends
 
 # Install vnc and components
 RUN apt install -qy \
@@ -40,7 +40,7 @@ RUN apt install -qy \
         net-tools
 
 # Install extra packages
-RUN apt install -qy \
+RUN apt install -qy --no-install-recommends \
         ${METAPACKAGE} \
         nano \
         mc \
@@ -90,7 +90,7 @@ RUN chmod +x ./*
 RUN ./vscodium.sh || echo "VSCodium was not installed"
 RUN ./nodejs.sh || echo "NodeJS was not installed"
 RUN ./python.sh || echo "Python components were not installed"
-RUN ./signal.sh || echo "Signal was not installed"
+#RUN ./signal.sh || echo "Signal was not installed"
 
 # Cleanup scripts
 WORKDIR /
