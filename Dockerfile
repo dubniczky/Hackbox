@@ -1,11 +1,20 @@
-FROM kalilinux/kali-rolling:latest
+# Hackbox - Kali Linux Container With GUI
+# Author: Richard Antal Nagy
 
-ENV USER root
+# Build arguments
+ARG USER="root"
+ARG METAPACKAGE="kali-tools-top10"
+ARG KALI_DIST="kali-rolling"
+ARG KALI_TAG="latest"
+ARG VNC_PASSWORD="toor"
+
+# Source image
+FROM kalilinux/${KALI_DIST}:${KALI_TAG}
 
 # Disable interactivity
 ENV DEBIAN_FRONTEND noninteractive \
-    NEEDRESTART_MODE a \
-    DEBIAN_PRIORITY=critical
+    DEBIAN_PRIORITY=critical \
+    NEEDRESTART_MODE a
 
 # Update packages
 RUN apt -q update && \
@@ -18,16 +27,16 @@ RUN apt -qy install kali-linux-core
 RUN apt -qy install kali-desktop-xfce
 
 # Install vnc and components
-RUN apt -qy install tightvncserver dbus dbus-x11 novnc net-tools
-
-# Set up VNC password
-RUN mkdir -p /root/.vnc/; \
-    echo toor | vncpasswd -f > /root/.vnc/passwd; \
-    chmod 600 /root/.vnc/passwd
-
-# Extra packages
 RUN apt -qy install \
-    kali-tools-top10 \
+    tightvncserver \
+    dbus \
+    dbus-x11 \
+    novnc \
+    net-tools
+
+# Install extra packages
+RUN apt -qy install \
+    ${METAPACKAGE} \
     nano \
     mc \
     unzip \
@@ -47,21 +56,23 @@ COPY /scripts /root/scripts
 WORKDIR /root/scripts/
 RUN chmod +x ./*
 
-# Run scripts
+# Run mandatory scripts
 RUN ./certificate.sh
-RUN ./vscodium.sh || true
-RUN ./nodejs.sh || true
-RUN ./python.sh || true
-RUN ./signal.sh || true
-RUN ./vscodium.sh || true
+
+# Run optional installer scripts
+RUN ./vscodium.sh || echo "VSCodium was not installed"
+RUN ./nodejs.sh || echo "NodeJS was not installed"
+RUN ./python.sh || echo "Python components were not installed"
+RUN ./signal.sh || echo "Signal was not installed"
 
 # Cleanup scripts
 WORKDIR /
 RUN rm -rf /root/scripts
 
-# Cleanup user files
-WORKDIR $HOME
-RUN rm -rf Documents Downloads Music Pictures Public Templates Videos
+# Set up VNC password
+RUN mkdir -p /root/.vnc/; \
+    echo ${VNC_PASSWORD} | vncpasswd -f > /root/.vnc/passwd; \
+    chmod 600 /root/.vnc/passwd
 
 # Delete unnecessary packages
 RUN apt -qy purge \
@@ -70,6 +81,11 @@ RUN apt -qy purge \
 # Clean package cache and unused packages
 RUN apt -qy clean && \
     apt -qy autoremove
+
+# Cleanup user files
+USER ${USER}
+WORKDIR $HOME
+RUN rm -rf Documents Downloads Music Pictures Public Templates Videos
 
 # Entrypoint
 WORKDIR /root
