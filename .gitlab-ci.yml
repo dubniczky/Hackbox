@@ -3,13 +3,27 @@ stages:
 
 container-registry:
   stage: deploy
-  image: docker:20.10.16
+  variables:
+    DOCKER_VERSION: 20.10.16
+  image: docker:$DOCKER_VERSION
   only:
+    # Main branch only, do not upload development versions
     - main
+  tags:
+    # Using a custom GitLab runner, because building and pushing
+    # to both registries takes over 30 minutes with shared runners
+    - runner-2700x
   services:
-    - docker:20.10.16-dind
+    # Docker in docker service to build containers
+    - docker:$DOCKER_VERSION-dind
   script:
+    # Build container
+    - docker build -t $CI_REGISTRY_IMAGE -t detrix/hackbox:latest .
     # Push to GitLab Container Registry
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
-    - docker build -t $CI_REGISTRY_IMAGE -t detrix/hackbox:latest .
     - docker push $CI_REGISTRY_IMAGE
+    - docker logout
+    # Push to DockerHub Container Registry
+    - echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USER --password-stdin
+    - docker push detrix/hackbox:latest
+    - docker logout
