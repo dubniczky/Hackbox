@@ -55,7 +55,10 @@ RUN apt install -qy --no-install-recommends \
         dirb \
         hashcat \
         wordlists \
-        tor
+        tor \
+        iproute2 \
+        wfuzz \
+        nfs-common
 
 # Create kali user
 ENV USER="kali"
