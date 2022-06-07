@@ -70,7 +70,7 @@ RUN apt install -qy nodejs npm; \
     node -v && npm -v \
     npm i -g yarn
 # Using yarn to install further global packages instead of npm
-RUN yarn global add \
+RUN npx yarn global add \
         pnpm \
         nodemon \
         http-server
