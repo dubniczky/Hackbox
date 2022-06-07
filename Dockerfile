@@ -55,6 +55,16 @@ RUN apt install -qy --no-install-recommends \
         wfuzz \
         nfs-common
 
+# Install and update python packages
+RUN apt install -qy python3-pip; \
+    pip install --upgrade pip setuptools wheel
+RUN pip install --compile --retries 3 --disable-pip-version-check --no-color \
+        numpy \
+        pycryptodome \
+        requests \
+        fastapi \
+        pyyaml
+
 # Create kali user
 ENV USER="kali"
 RUN useradd -r -s /bin/zsh -m ${USER}; \
@@ -68,7 +78,6 @@ RUN chmod +x ./*
 # Run optional installer scripts
 RUN ./vscodium.sh || echo "VSCodium was not installed"
 RUN ./nodejs.sh || echo "NodeJS was not installed"
-RUN ./python.sh || echo "Python components were not installed"
 #RUN ./signal.sh || echo "Signal was not installed"
 
 # Cleanup scripts
