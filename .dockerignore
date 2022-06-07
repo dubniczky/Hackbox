@@ -1,18 +1,20 @@
 # IMPORTANT: Ignore all files you are not using, especially the ones with sensitive
 # or specific information about your build or services.
 
-# Folders
+## Folders
 .git/
 .cache/
 logs/
 __MACOSX/
 .DS_Store/
+runner/
 
 ## Files
 # Might contain sensitive information
 .editorconfig
 .gitattributes
 .gitignore
+.gitlab-ci.yml
 .env
 compose.yml
 LICENSE
