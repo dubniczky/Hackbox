@@ -65,6 +65,18 @@ RUN pip install --compile --retries 3 --disable-pip-version-check --no-color \
         fastapi \
         pyyaml
 
+# Install and update nodejs packages
+RUN apt install -qy nodejs npm; \
+    node -v && npm -v \
+    npm i -g yarn
+# Using yarn to install further global packages instead of npm
+RUN yarn global add \
+        pnpm \
+        nodemon \
+        http-server
+# List directly installed global packages
+RUN npm ls -g --depth=0
+
 # Create kali user
 ENV USER="kali"
 RUN useradd -r -s /bin/zsh -m ${USER}; \
@@ -77,7 +89,6 @@ RUN chmod +x ./*
 
 # Run optional installer scripts
 RUN ./vscodium.sh || echo "VSCodium was not installed"
-RUN ./nodejs.sh || echo "NodeJS was not installed"
 #RUN ./signal.sh || echo "Signal was not installed"
 
 # Cleanup scripts
