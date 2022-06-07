@@ -93,7 +93,17 @@ ENV CERT_LIFETIME="30" \
     CERT_L="Austin" \
     CERT_ST="ST" \
     CERT_LOC="/etc/ssl" \
-    VNC_PASSWORD="toor"
+    CERT_DOMAIN="localhost" \
+    USER_PASSWORD="toor" \
+    NOVNC_PORT="8080" \
+    VNC_INDEX="0" \
+    VNC_PORT="5900" \
+    VNC_DISPLAY="1920x1080" \
+    VNC_DEPTH="24" \
+    VNC_RUNTIME_LOG="/var/log/vnc.log" \
+    NOVNC_RUNTIME_LOG="/var/log/novnc.log" \
+    USER="kali" \
+    MASTER_SHELL="/bin/zsh"
 
 # Entrypoint
 WORKDIR /root

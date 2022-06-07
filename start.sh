@@ -7,7 +7,7 @@ openssl req \
     -x509 \
     -days ${CERT_LIFETIME} \
     -nodes \
-    -subj "/C=${CERT_C}/ST=${CERT_ST}/L=${CERT_L}/O=OpenSource/CN=localhost" \
+    -subj "/C=${CERT_C}/ST=${CERT_ST}/L=${CERT_L}/O=OpenSource/CN=${CERT_DOMAIN}" \
     -out ${CERT_LOC}/certs/novnc_cert.pem \
     -keyout ${CERT_LOC}/private/novnc_key.pem \
     > /dev/null 2>&1
@@ -17,42 +17,45 @@ chmod 600 ${CERT_LOC}/private/novnc_combined.pem
 
 # Set VNC password
 # Must be done upon start, because it may be overwritten by manual env args
-echo "${VNC_PASSWORD}" | vncpasswd -f > /root/.vnc/passwd; \
+echo "${USER_PASSWORD}" | vncpasswd -f > /root/.vnc/passwd; \
     chmod 600 /root/.vnc/passwd
 # Set user password
-echo "${VNC_PASSWORD}" | passwd --stdin ${USER}
+echo "${USER_PASSWORD}" | passwd --stdin ${USER}
 
-# Start VNC server
+# Start VNC server and reroute stdout to log file
 echo "Starting VNC server..."
 echo "   > port: $VNC_PORT"
 echo "   > resoultion: $VNC_DISPLAY"
 echo "   > bit-depth: $VNC_DEPTH"
 echo "   > runtime log: $VNC_RUNTIME_LOG"
-vncserver :0 \
+vncserver :$VNC_INDEX \
     -rfbport $VNC_PORT \
     -geometry $VNC_DISPLAY \
     -depth $VNC_DEPTH \
     > $VNC_RUNTIME_LOG 2>&1
 echo "Done."
 
-# Start noVNC server
+# Start noVNC server and reroute stdout to log file
 echo "Starting noVNC server..."
-echo "   > port: $NOVNC_PORT"
+echo "   > port: $NOVNC_PORT ~> ($VNC_PORT)"
 echo "   > runtime log: $NOVNC_RUNTIME_LOG"
+echo "   > domain: $CERT_DOMAIN"
 /usr/share/novnc/utils/launch.sh \
     --listen $NOVNC_PORT \
-    --vnc localhost:$VNC_PORT \
-    --cert /etc/ssl/private/novnc_combined.pem \
+    --vnc ${CERT_DOMAIN}:$VNC_PORT \
+    --cert ${CERT_LOC}/private/novnc_combined.pem \
     --ssl-only \
     > $NOVNC_RUNTIME_LOG 2>&1 &
 echo "Done."
 
 # Display certificate fingerprint
 echo "Certificate fingerprint:"
-openssl x509 -in /etc/ssl/certs/novnc_cert.pem -noout -fingerprint -sha256
+openssl x509 -in ${CERT_LOC}/certs/novnc_cert.pem -noout -fingerprint -sha256
 
 # Display URL (port might change with docker port readdressing)
-echo "https://localhost:$NOVNC_PORT/vnc.html"
+echo "Default service url: (note that in case you used port forwarding, it might be different)"
+echo "https://${CERT_DOMAIN}:$NOVNC_PORT/vnc.html"
 
-# Start shell
-/bin/zsh
+# Start master shell
+echo "Setup complete. Initializing shell.."
+${MASTER_SHELL}
