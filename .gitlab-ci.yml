@@ -2,9 +2,6 @@ variables:
   # Using a static docker version for the standard and dind images
   # This is only for reporducability so it can be upgraded
   DOCKER_VERSION: 20.10.16
-  # Using a custom GitLab runner, because building and pushing
-  # to both registries takes over 30 minutes with shared runners
-  RUNNER_TAG: runner-2700x
 
 image: docker:$DOCKER_VERSION
 
@@ -19,7 +16,9 @@ build:
     # Main branch only, do not build development versions
     - main
   tags:
-    - $RUNNER_TAG
+    # Using a custom GitLab runner, because building and pushing
+    # to both registries takes over 30 minutes with shared runners
+    - $GL_RUNNER_TAG
   services:
     # Docker in docker service to build containers
     - docker:$DOCKER_VERSION-dind
@@ -34,7 +33,7 @@ gitlab:
     # Main branch only, do not upload development versions
     - main
   tags:
-    - $RUNNER_TAG
+    - $GL_RUNNER_TAG
   services:
     # Docker in docker service to build containers
     - docker:$DOCKER_VERSION-dind
@@ -54,7 +53,7 @@ dockerhub:
     # Main branch only, do not upload development versions
     - main
   tags:
-    - $RUNNER_TAG
+    - $GL_RUNNER_TAG
   services:
     # Docker in docker service to build containers
     - docker:$DOCKER_VERSION-dind
