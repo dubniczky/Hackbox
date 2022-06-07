@@ -35,7 +35,7 @@ RUN apt install -qy \
         net-tools
 
 # Install extra packages
-RUN apt install -qy --no-install-recommends \
+RUN apt install -qy \
         ${METAPACKAGE} \
         nano \
         mc \
@@ -125,8 +125,11 @@ ENV CERT_LIFETIME="30" \
     USER="kali" \
     MASTER_SHELL="/bin/zsh"
 
-# Entrypoint
+# Copy startup script
 WORKDIR /root
 COPY start.sh .start.sh
 RUN chmod 700 .start.sh
-ENTRYPOINT [ "./.start.sh" ]
+
+# Define default entry point script
+ENTRYPOINT [ "bash" ]
+CMD [ ".start.sh" ]
