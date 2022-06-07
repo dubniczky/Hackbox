@@ -1,5 +1,27 @@
 #!/bin/bash
 
+# Generate new certificate each time the container starts
+# It is important not to ship the same certificate in the pre-built containers
+openssl req \
+    -new \
+    -x509 \
+    -days ${CERT_LIFETIME} \
+    -nodes \
+    -subj "/C=${CERT_C}/ST=${CERT_ST}/L=${CERT_L}/O=OpenSource/CN=localhost" \
+    -out ${CERT_LOC}/certs/novnc_cert.pem \
+    -keyout ${CERT_LOC}/private/novnc_key.pem \
+    > /dev/null 2>&1
+cat ${CERT_LOC}/certs/novnc_cert.pem ${CERT_LOC}/private/novnc_key.pem > \
+    ${CERT_LOC}/private/novnc_combined.pem
+chmod 600 ${CERT_LOC}/private/novnc_combined.pem
+
+# Set VNC password
+# Must be done upon start, because it may be overwritten by manual env args
+echo "${VNC_PASSWORD}" | vncpasswd -f > /root/.vnc/passwd; \
+    chmod 600 /root/.vnc/passwd
+# Set user password
+echo "${VNC_PASSWORD}" | passwd --stdin ${USER}
+
 # Start VNC server
 echo "Starting VNC server..."
 echo "   > port: $VNC_PORT"
