@@ -60,7 +60,7 @@ RUN apt install -qy \
         wfuzz \
         nfs-common
 
-# Install and update python packages
+## Install and update python packages
 RUN apt install -qy python3-pip; \
     pip install --upgrade pip setuptools wheel
 RUN pip install --compile --retries 3 --disable-pip-version-check --no-color \
@@ -69,6 +69,14 @@ RUN pip install --compile --retries 3 --disable-pip-version-check --no-color \
         requests \
         fastapi \
         pyyaml
+# Add python alias
+RUN echo 'alias python="python3"' \
+        | tee -a \
+            /root/.zshrc \
+            /root/.bashrc \
+            /home/${USER}/.zshrc \
+            /home/${USER}/.bashrc \
+        >/dev/null
 
 ## Install and update nodejs packages
 RUN apt install -qy nodejs npm; \
