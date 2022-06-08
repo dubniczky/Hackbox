@@ -1,10 +1,12 @@
 # These commands are used for development
 
+uname := detrix
 cname := hackbox
 devtag := dev
 vnc_port := 8080:8080
 novnc_port := 5900:5900
 env_file := .env
+current_directory := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 # Run even if file with same name exists
 .PHONY: all build start compose box
@@ -20,19 +22,24 @@ build:
 
 # Start latest dev tagged container
 start:
-	@docker run --rm -it \
-		--net=host \
-		--env-file $(env_file) \
+	docker run --rm -it \
+		-p $(vnc_port) \
+		-p $(novnc_port) \
+		--mount type=bind,source="$(current_directory)/share",target=/share \
 		$(cname):$(devtag)
 
 # Start docker-compose
 compose:
 	docker-compose up
 
+# Pull the latest version of the container
+pull:
+	docker pull $(uname)/$(cname):latest
+
 # Command to start the latest release version of the container
 box:
-	docker run --rm -it \
+	@docker run --rm -it \
 		-p $(vnc_port) \
 		-p $(novnc_port) \
-		--env-file $(env_file) \
-		$(cname):latest
+		--mount type=bind,source="$(current_directory)/share",target=/share \
+		$(uname)/$(cname):latest
