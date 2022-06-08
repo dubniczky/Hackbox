@@ -1,1 +1,8 @@
+# Editor specific folers
 .vscode/
+.vs/
+.idea/
+
+# All files in share except gitkeep
+/share/*
+!/share/.gitkeep
