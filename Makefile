@@ -43,3 +43,12 @@ box:
 		-p $(novnc_port) \
 		--mount type=bind,source="$(current_directory)/share",target=/share \
 		$(uname)/$(cname):latest
+
+# Start a kali sandbox with connected share directory
+sandbox:
+	docker run \
+		-it \
+		--rm \
+		--mount type=bind,source="$(current_directory)/share",target=/share \
+		kalilinux/kali-rolling:latest \
+		/bin/bash
