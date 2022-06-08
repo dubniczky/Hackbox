@@ -82,18 +82,24 @@ ENV USER="kali"
 RUN useradd -r -s /bin/zsh -m ${USER}; \
     echo "${USER}\tALL=(ALL:ALL)\tNOPASSWD:ALL" >> /etc/sudoers
 
-# Copy scripts
-COPY /scripts /root/scripts
-WORKDIR /root/scripts/
-RUN chmod +x ./*
-
-# Run optional installer scripts
-RUN ./vscodium.sh || echo "VSCodium was not installed"
-#RUN ./signal.sh || echo "Signal was not installed"
-
-# Cleanup scripts
-WORKDIR /
-RUN rm -rf /root/scripts
+## Install VSCodium
+# Add repository gpg
+RUN wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg \
+        | gpg --dearmor \
+        | sudo dd of=/usr/share/keyrings/vscodium-archive-keyring.gpg
+# Add repository to apt
+RUN echo 'deb [ signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg ] https://download.vscodium.com/debs vscodium main' \
+    | sudo tee /etc/apt/sources.list.d/vscodium.list
+# Update package list and install
+RUN apt update -q && apt install -qy codium
+# Setup alias to start codium with code command
+RUN echo 'alias code="DONT_PROMPT_WSL_INSTALL=1 codium --no-sandbox --user-data-dir /home/${USER}"' \
+        | tee -a \
+            /root/.zshrc \
+            /root/.bashrc \
+            /home/${USER}/.zshrc \
+            /home/${USER}/.bashrc \
+        >/dev/null
 
 # Delete unnecessary packages
 RUN apt purge -qy \
