@@ -16,11 +16,6 @@ ENV DEBIAN_FRONTEND="noninteractive" \
     DEBIAN_PRIORITY="critical" \
     NEEDRESTART_MODE="a"
 
-# Create user
-ENV USER="kali"
-RUN useradd -r -s /bin/zsh -m ${USER}; \
-    echo "${USER}\tALL=(ALL:ALL)\tNOPASSWD:ALL" >> /etc/sudoers
-
 # Update packages
 RUN apt update -q && \
     apt upgrade -qy
@@ -59,6 +54,11 @@ RUN apt install -qy \
         iproute2 \
         wfuzz \
         nfs-common
+
+# Create user
+ENV USER="kali"
+RUN useradd -r -s /bin/zsh -m ${USER}; \
+    echo "${USER}\tALL=(ALL:ALL)\tNOPASSWD:ALL" >> /etc/sudoers
 
 ## Install and update python packages
 RUN apt install -qy python3-pip; \
@@ -137,11 +137,19 @@ ENV CERT_LIFETIME="30" \
     VNC_RUNTIME_LOG="/var/log/vnc.log" \
     NOVNC_RUNTIME_LOG="/var/log/novnc.log" \
     MASTER_SHELL="/bin/zsh" \
-    SHARE_DIR="/share"
+    SHARE_DIR="/share" \
+    FREE_PORT_0="9900" \
+    FREE_PORT_1="9901" \
+    FREE_PORT_2="9902"
 
-# Added default port expose
+# Expose VNC ports
 EXPOSE ${VNC_PORT}
 EXPOSE ${NOVNC_PORT}
+
+# Expose free ports (like reverse shell)
+EXPOSE ${FREE_PORT_0}
+EXPOSE ${FREE_PORT_1}
+EXPOSE ${FREE_PORT_2}
 
 # Create share volume
 RUN mkdir ${SHARE_DIR}
