@@ -16,6 +16,11 @@ ENV DEBIAN_FRONTEND="noninteractive" \
     DEBIAN_PRIORITY="critical" \
     NEEDRESTART_MODE="a"
 
+# Create user
+ENV USER="kali"
+RUN useradd -r -s /bin/zsh -m ${USER}; \
+    echo "${USER}\tALL=(ALL:ALL)\tNOPASSWD:ALL" >> /etc/sudoers
+
 # Update packages
 RUN apt update -q && \
     apt upgrade -qy
@@ -65,22 +70,17 @@ RUN pip install --compile --retries 3 --disable-pip-version-check --no-color \
         fastapi \
         pyyaml
 
-# Install and update nodejs packages
+## Install and update nodejs packages
 RUN apt install -qy nodejs npm; \
     node -v && npm -v \
     npm i -g yarn
-# Using yarn to install further global packages instead of npm
+# Using yarn to install further global packages instead of npm because it's generally much faster
 RUN npx yarn global add \
         pnpm \
         nodemon \
         http-server
 # List directly installed global packages
 RUN npm ls -g --depth=0
-
-# Create kali user
-ENV USER="kali"
-RUN useradd -r -s /bin/zsh -m ${USER}; \
-    echo "${USER}\tALL=(ALL:ALL)\tNOPASSWD:ALL" >> /etc/sudoers
 
 ## Install VSCodium
 # Add repository gpg
@@ -128,7 +128,6 @@ ENV CERT_LIFETIME="30" \
     VNC_DEPTH="24" \
     VNC_RUNTIME_LOG="/var/log/vnc.log" \
     NOVNC_RUNTIME_LOG="/var/log/novnc.log" \
-    USER="kali" \
     MASTER_SHELL="/bin/zsh" \
     SHARE_DIR="/share"
 
