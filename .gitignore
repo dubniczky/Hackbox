@@ -3,6 +3,14 @@
 .vs/
 .idea/
 
+# System specific
+.DS_Store
+
+# Temporary
+.env
+*.log
+*.tmp
+
 # All files in share except gitkeep
 /share/*
 !/share/.gitkeep
