@@ -12,9 +12,9 @@ FROM kalilinux/${KALI_DIST}:${KALI_TAG}
 ARG METAPACKAGE="kali-tools-top10"
 
 # Disable interactivity
-ENV DEBIAN_FRONTEND noninteractive \
-    DEBIAN_PRIORITY=critical \
-    NEEDRESTART_MODE a
+ENV DEBIAN_FRONTEND="noninteractive" \
+    DEBIAN_PRIORITY="critical" \
+    NEEDRESTART_MODE="a"
 
 # Update packages
 RUN apt update -q && \
@@ -123,7 +123,15 @@ ENV CERT_LIFETIME="30" \
     VNC_RUNTIME_LOG="/var/log/vnc.log" \
     NOVNC_RUNTIME_LOG="/var/log/novnc.log" \
     USER="kali" \
-    MASTER_SHELL="/bin/zsh"
+    MASTER_SHELL="/bin/zsh" \
+    SHARE_DIR="/share"
+
+# Added default port expose
+EXPOSE ${VNC_PORT}
+EXPOSE ${NOVNC_PORT}
+
+# Create share volume
+RUN mkdir ${SHARE_DIR}
 
 # Copy startup script
 WORKDIR /root
