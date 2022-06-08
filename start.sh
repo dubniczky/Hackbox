@@ -17,10 +17,11 @@ chmod 600 ${CERT_LOC}/private/novnc_combined.pem
 
 # Set VNC password
 # Must be done upon start, because it may be overwritten by manual env args
+mkdir -p /root/.vnc
 echo "${USER_PASSWORD}" | vncpasswd -f > /root/.vnc/passwd; \
     chmod 600 /root/.vnc/passwd
 # Set user password
-echo "${USER_PASSWORD}" | passwd --stdin ${USER}
+echo -e "${USER_PASSWORD}\n${USER_PASSWORD}" | passwd -q ${USER}
 
 # Start VNC server and reroute stdout to log file
 echo "Starting VNC server..."
