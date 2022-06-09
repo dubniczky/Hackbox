@@ -33,6 +33,9 @@ vncserver :$VNC_INDEX \
     -rfbport $VNC_PORT \
     -geometry $VNC_DISPLAY \
     -depth $VNC_DEPTH \
+    -rfbauth /root/.vnc/passwd \
+    -desktop xfce \
+    -alwaysshared \
     > $VNC_RUNTIME_LOG 2>&1
 echo "Done."
 
@@ -58,5 +61,6 @@ echo "Default service url: (note that in case you used port forwarding, it might
 echo "https://${CERT_DOMAIN}:$NOVNC_PORT/vnc.html"
 
 # Start master shell
-echo "Setup complete. Initializing shell.."
+echo "Setup complete."
+echo "Initializing shell.."
 ${MASTER_SHELL}
