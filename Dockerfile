@@ -53,9 +53,8 @@ RUN apt install -qy \
         tor \
         iproute2 \
         wfuzz \
-        nfs-common
-
-# TODO: man
+        nfs-common \
+        man
 
 # Create user
 ENV USER="kali"
@@ -165,13 +164,17 @@ RUN rm -rf vnc.html \
 # Need vnc.html to exist to pass novnc run script checks
 RUN ln index.html vnc.html
 
-# Create share volume
-RUN mkdir ${SHARE_DIR}
-
 # Copy startup script
 WORKDIR /root
 COPY ./scripts/start.sh .start.sh
 RUN chmod 700 .start.sh
+
+# Create share volume
+RUN mkdir ${SHARE_DIR} && \
+    mkdir -p /home/${USER}/Desktop && \
+    mkdir -p /root/Desktop && \
+    ln -s ${SHARE_DIR} /home/${USER}/Desktop/share && \
+    ln -s ${SHARE_DIR} /root/Desktop/share
 
 # Set root default shell
 RUN chsh -s ${MASTER_SHELL} root; \
