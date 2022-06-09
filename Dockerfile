@@ -155,7 +155,7 @@ EXPOSE ${FREE_PORT_2}
 
 # Override with custom novnc main page
 WORKDIR /usr/share/novnc
-COPY /novnc/index.html index.html
+COPY /novnc .
 COPY /assets/icon.png icon.png
 RUN chmod 777 index.html
 RUN rm -rf vnc.html \
@@ -172,6 +172,10 @@ RUN mkdir ${SHARE_DIR}
 WORKDIR /root
 COPY ./scripts/start.sh .start.sh
 RUN chmod 700 .start.sh
+
+# Set root default shell
+RUN chsh -s ${MASTER_SHELL} root; \
+    chsh -s ${MASTER_SHELL} ${USER}
 
 # Define default entry point script
 ENTRYPOINT [ "bash" ]
