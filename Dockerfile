@@ -55,6 +55,8 @@ RUN apt install -qy \
         wfuzz \
         nfs-common
 
+# TODO: man
+
 # Create user
 ENV USER="kali"
 RUN useradd -r -s /bin/zsh -m ${USER}; \
@@ -150,6 +152,12 @@ EXPOSE ${NOVNC_PORT}
 EXPOSE ${FREE_PORT_0}
 EXPOSE ${FREE_PORT_1}
 EXPOSE ${FREE_PORT_2}
+
+# Override with custom novnc main page
+WORKDIR /usr/share/novnc
+COPY ./novnc/index.html index.html
+RUN chmod 777 index.html
+RUN rm -f vnc.html vnc_lite.html
 
 # Create share volume
 RUN mkdir ${SHARE_DIR}
