@@ -58,7 +58,7 @@ openssl x509 -in ${CERT_LOC}/certs/novnc_cert.pem -noout -fingerprint -sha256
 
 # Display URL (port might change with docker port readdressing)
 echo "Default service url: (note that in case you used port forwarding, it might be different)"
-echo "https://${CERT_DOMAIN}:$NOVNC_PORT/index.html"
+echo "https://${CERT_DOMAIN}:$NOVNC_PORT/index.html?resize=scale&encrypted=1"
 
 # Start master shell
 echo "Setup complete."

@@ -155,9 +155,15 @@ EXPOSE ${FREE_PORT_2}
 
 # Override with custom novnc main page
 WORKDIR /usr/share/novnc
-COPY ./novnc/index.html index.html
+COPY /novnc/index.html index.html
+COPY /assets/icon.png icon.png
 RUN chmod 777 index.html
-RUN rm -f vnc.html vnc_lite.html
+RUN rm -rf vnc.html \
+           vnc_lite.html \
+           vnc_auto.html \
+           app/images/icons
+# Need vnc.html to exist to pass novnc run script checks
+RUN ln index.html vnc.html
 
 # Create share volume
 RUN mkdir ${SHARE_DIR}
