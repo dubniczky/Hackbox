@@ -156,7 +156,7 @@ RUN mkdir ${SHARE_DIR}
 
 # Copy startup script
 WORKDIR /root
-COPY start.sh .start.sh
+COPY ./scripts/start.sh .start.sh
 RUN chmod 700 .start.sh
 
 # Define default entry point script
