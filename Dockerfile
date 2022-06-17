@@ -54,7 +54,8 @@ RUN apt install -qy \
         iproute2 \
         wfuzz \
         nfs-common \
-        man
+        man \
+        zaproxy
 
 # Create user
 ENV USER="kali"
